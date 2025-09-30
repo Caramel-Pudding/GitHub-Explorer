@@ -1,0 +1,68 @@
+{
+  "compilerOptions": {
+    // Performance & Build Optimizations
+    "incremental": true,
+    "tsBuildInfoFile": ".next/cache/tsconfig.tsbuildinfo",
+    // Output/JS standard (Enhanced for Next.js 15)
+    "target": "ES2023",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2023"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+    // Files & JSX
+    "jsx": "preserve",
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": false,
+    "allowArbitraryExtensions": false,
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    // Enhanced Strictness
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "useUnknownInCatchVariables": true,
+    "noErrorTruncation": true,
+    // Clean code
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "forceConsistentCasingInFileNames": true,
+    // Modules & imports
+    "verbatimModuleSyntax": true,
+    // Development Experience
+    "pretty": true,
+    "sourceMap": true,
+    // Project behavior
+    "isolatedModules": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".next/cache/**/*"
+  ]
+}
