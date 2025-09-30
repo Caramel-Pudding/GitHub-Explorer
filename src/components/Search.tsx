@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { searchGitHubUsers } from "@/lib/api/github";
+import { useGitHubSearch } from "@/lib/hooks/useGitHubSearch";
 import { UserDropdown } from "@/components/UserDropdown";
 
 export function Search() {
@@ -10,11 +9,7 @@ export function Search() {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedUserId, setExpandedUserId] = useState<number | null>(null);
 
-  const { data = [], isFetching } = useQuery({
-    queryKey: ["GitHubUserSearch", searchQuery],
-    queryFn: () => searchGitHubUsers(searchQuery),
-    enabled: searchQuery.length > 0,
-  });
+  const { data = [], isFetching, error } = useGitHubSearch(searchQuery);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -44,7 +39,19 @@ export function Search() {
         </button>
       </form>
 
-      {searchQuery && !isFetching && data.length > 0 && (
+      {searchQuery && error && (
+        <div className="rounded bg-red-50 px-4 py-3 text-sm text-red-700">
+          Failed to search users: {error.message}
+        </div>
+      )}
+
+      {searchQuery && !isFetching && !error && data.length === 0 && (
+        <div className="rounded bg-gray-100 px-4 py-3 text-sm text-gray-600">
+          No users found for &quot;{searchQuery}&quot;
+        </div>
+      )}
+
+      {searchQuery && !isFetching && !error && data.length > 0 && (
         <div className="space-y-4">
           <p className="text-sm text-gray-600">
             Showing users for &quot;{searchQuery}&quot;

@@ -160,3 +160,24 @@ test("has correct aria attributes for accessibility", () => {
   });
   expect(region).toHaveAttribute("id", "repos-1");
 });
+
+test("shows error message when repository fetch fails", async () => {
+  const onToggle = vi.fn();
+  mockFetchUserRepositories.mockRejectedValue(
+    new Error("Failed to fetch repositories for octocat: Forbidden"),
+  );
+
+  renderWithQueryClient(
+    <UserDropdown user={mockUser} isExpanded={true} onToggle={onToggle} />,
+  );
+
+  // Wait for error message to appear
+  expect(
+    await screen.findByText(/failed to load repositories/i),
+  ).toBeInTheDocument();
+  expect(screen.getByText(/forbidden/i)).toBeInTheDocument();
+
+  // Verify no empty state or repository list shown
+  expect(screen.queryByText(/no repositories found/i)).not.toBeInTheDocument();
+  expect(screen.queryByRole("link")).not.toBeInTheDocument();
+});

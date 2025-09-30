@@ -14,7 +14,10 @@ export function UserDropdown({
   isExpanded,
   onToggle,
 }: UserDropdownProps) {
-  const { data, isLoading } = useUserRepositories(user.login, isExpanded);
+  const { data, isLoading, error } = useUserRepositories(
+    user.login,
+    isExpanded,
+  );
 
   const repositories = data ?? [];
 
@@ -59,13 +62,20 @@ export function UserDropdown({
             </div>
           )}
 
-          {!isLoading && repositories.length === 0 && (
+          {error && (
+            <div className="rounded bg-red-50 px-4 py-3 text-sm text-red-700">
+              Failed to load repositories: {error.message}
+            </div>
+          )}
+
+          {!isLoading && !error && repositories.length === 0 && (
             <div className="rounded bg-gray-100 px-4 py-3 text-sm text-gray-600">
               No repositories found
             </div>
           )}
 
           {!isLoading &&
+            !error &&
             repositories.map((repo) => (
               <a
                 key={repo.id}
