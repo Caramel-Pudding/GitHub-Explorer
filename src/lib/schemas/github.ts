@@ -21,7 +21,19 @@ export const githubSearchResponseSchema = z.object({
 });
 
 /**
+ * Schema for a GitHub repository
+ */
+export const githubRepositorySchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  description: z.string().nullable(),
+  stargazers_count: z.number(),
+  html_url: z.url(),
+});
+
+/**
  * Inferred TypeScript types from schemas
  */
 export type GitHubUser = z.infer<typeof githubUserSchema>;
 export type GitHubSearchResponse = z.infer<typeof githubSearchResponseSchema>;
+export type GitHubRepository = z.infer<typeof githubRepositorySchema>;

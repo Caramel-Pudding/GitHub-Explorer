@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { searchGitHubUsers } from "@/lib/api/github";
+import { UserDropdown } from "@/components/UserDropdown";
 
 export function Search() {
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [expandedUserId, setExpandedUserId] = useState<number | null>(null);
 
   const { data = [], isFetching } = useQuery({
     queryKey: ["GitHubUserSearch", searchQuery],
@@ -49,27 +51,16 @@ export function Search() {
           </p>
           <div className="space-y-2">
             {data.map((user) => (
-              <button
+              <UserDropdown
                 key={user.id}
-                type="button"
-                className="flex w-full items-center justify-between rounded bg-gray-200 px-4 py-3 text-left transition-colors hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <span className="font-medium text-gray-900">{user.login}</span>
-                <svg
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  className="h-5 w-5 text-gray-700"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
+                user={user}
+                isExpanded={expandedUserId === user.id}
+                onToggle={() => {
+                  setExpandedUserId(
+                    expandedUserId === user.id ? null : user.id,
+                  );
+                }}
+              />
             ))}
           </div>
         </div>
