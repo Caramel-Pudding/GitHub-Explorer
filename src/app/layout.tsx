@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "GitHub Explorer",
@@ -16,7 +17,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className="scroll-smooth">
       <body>
-        <div role="main">{children}</div>
+        <Providers>
+          <div role="main">{children}</div>
+        </Providers>
       </body>
     </html>
   );

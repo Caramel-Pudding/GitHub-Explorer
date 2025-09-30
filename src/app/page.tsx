@@ -1,5 +1,10 @@
 import React from "react";
+import { Search } from "@/components/Search";
 
 export default function Page() {
-  return <main>Blank App</main>;
+  return (
+    <main>
+      <Search />
+    </main>
+  );
 }
