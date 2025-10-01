@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -6,8 +6,12 @@ export const metadata: Metadata = {
   title: "GitHub Explorer",
   description: "An app to explore GitHub",
   authors: [{ name: "Erik Kuznetsov" }],
-  viewport: "width=device-width, initial-scale=1",
   robots: "index, follow",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 interface RootLayoutProps {
