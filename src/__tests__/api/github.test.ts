@@ -1,4 +1,4 @@
-import { describe, expect, test, vi, beforeEach } from "vitest";
+import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
 import { searchGitHubUsers, fetchUserRepositories } from "@/lib/api/github";
 import { GITHUB_API } from "@/lib/constants";
 
@@ -6,8 +6,17 @@ import { GITHUB_API } from "@/lib/constants";
 global.fetch = vi.fn();
 
 describe("GitHub API", () => {
+  const originalEnv = process.env;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset process.env before each test
+    process.env = { ...originalEnv };
+  });
+
+  afterEach(() => {
+    // Restore original env after each test
+    process.env = originalEnv;
   });
 
   describe("searchGitHubUsers", () => {
@@ -28,7 +37,9 @@ describe("GitHub API", () => {
       await searchGitHubUsers("test-query");
 
       // Verify fetch was called with the correct URL including per_page limit
-      expect(global.fetch).toHaveBeenCalledWith(
+      const [url] = (global.fetch as ReturnType<typeof vi.fn>).mock
+        .calls[0] as [string, RequestInit];
+      expect(url).toBe(
         `${GITHUB_API.BASE_URL}${GITHUB_API.ENDPOINTS.SEARCH_USERS}?q=test-query&per_page=${String(GITHUB_API.LIMITS.SEARCH)}`,
       );
     });
@@ -79,9 +90,90 @@ describe("GitHub API", () => {
 
       await searchGitHubUsers("test query with spaces");
 
-      expect(global.fetch).toHaveBeenCalledWith(
+      const [url] = (global.fetch as ReturnType<typeof vi.fn>).mock
+        .calls[0] as [string, RequestInit];
+      expect(url).toBe(
         `${GITHUB_API.BASE_URL}${GITHUB_API.ENDPOINTS.SEARCH_USERS}?q=test%20query%20with%20spaces&per_page=5`,
       );
+    });
+  });
+
+  describe("Authentication", () => {
+    test("includes Authorization header when GITHUB_TOKEN is set", async () => {
+      process.env["NEXT_PUBLIC_GITHUB_TOKEN"] = "test-token-123";
+
+      const mockResponse = {
+        ok: true,
+        statusText: "OK",
+        json: vi.fn().mockResolvedValue({
+          total_count: 0,
+          incomplete_results: false,
+          items: [],
+        }),
+      };
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue(
+        mockResponse,
+      );
+
+      await searchGitHubUsers("test");
+
+      // Verify fetch was called with Authorization header
+      const [, options] = (global.fetch as ReturnType<typeof vi.fn>).mock
+        .calls[0] as [string, RequestInit];
+      expect(options.headers).toMatchObject({
+        Accept: "application/vnd.github.v3+json",
+        Authorization: "Bearer test-token-123",
+      });
+    });
+
+    test("does not include Authorization header when GITHUB_TOKEN is not set", async () => {
+      delete process.env["NEXT_PUBLIC_GITHUB_TOKEN"];
+
+      const mockResponse = {
+        ok: true,
+        statusText: "OK",
+        json: vi.fn().mockResolvedValue({
+          total_count: 0,
+          incomplete_results: false,
+          items: [],
+        }),
+      };
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue(
+        mockResponse,
+      );
+
+      await searchGitHubUsers("test");
+
+      // Verify fetch was called without Authorization header
+      const [, options] = (global.fetch as ReturnType<typeof vi.fn>).mock
+        .calls[0] as [string, RequestInit];
+      expect(options.headers).toMatchObject({
+        Accept: "application/vnd.github.v3+json",
+      });
+      expect(options.headers).not.toHaveProperty("Authorization");
+    });
+
+    test("works correctly for repository fetch with auth token", async () => {
+      process.env["NEXT_PUBLIC_GITHUB_TOKEN"] = "repo-test-token";
+
+      const mockResponse = {
+        ok: true,
+        statusText: "OK",
+        json: vi.fn().mockResolvedValue([]),
+      };
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue(
+        mockResponse,
+      );
+
+      await fetchUserRepositories("octocat");
+
+      // Verify fetch was called with Authorization header
+      const [, options] = (global.fetch as ReturnType<typeof vi.fn>).mock
+        .calls[0] as [string, RequestInit];
+      expect(options.headers).toMatchObject({
+        Accept: "application/vnd.github.v3+json",
+        Authorization: "Bearer repo-test-token",
+      });
     });
   });
 
@@ -145,7 +237,9 @@ describe("GitHub API", () => {
 
       await fetchUserRepositories("user-with-dashes");
 
-      expect(global.fetch).toHaveBeenCalledWith(
+      const [url] = (global.fetch as ReturnType<typeof vi.fn>).mock
+        .calls[0] as [string, RequestInit];
+      expect(url).toBe(
         `${GITHUB_API.BASE_URL}${GITHUB_API.ENDPOINTS.USER_REPOS}/user-with-dashes/repos?sort=updated`,
       );
     });

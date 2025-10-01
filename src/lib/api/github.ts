@@ -10,7 +10,18 @@ async function fetchFromGitHub<T>(
   schema: z.ZodType<T>,
   errorPrefix: string,
 ): Promise<T> {
-  const response = await fetch(url);
+  const headers: HeadersInit = {
+    Accept: "application/vnd.github.v3+json",
+  };
+
+  // Add authorization header if token is available
+  const token = process.env["NEXT_PUBLIC_GITHUB_TOKEN"];
+  console.log(token);
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(url, { headers });
 
   if (!response.ok) {
     throw new Error(`${errorPrefix}: ${response.statusText}`);
