@@ -1,10 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, test, vi } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserDropdown } from "@/components/UserDropdown";
 import * as githubApi from "@/lib/api/github";
 import type { GitHubUser } from "@/lib/schemas/github";
+import { renderWithQueryClient } from "@/__tests__/utils/testUtils";
 
 // Mock the GitHub API
 vi.mock("@/lib/api/github", () => ({
@@ -12,23 +12,6 @@ vi.mock("@/lib/api/github", () => ({
 }));
 
 const mockFetchUserRepositories = vi.mocked(githubApi.fetchUserRepositories);
-
-function createTestQueryClient() {
-  return new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-      },
-    },
-  });
-}
-
-function renderWithQueryClient(ui: React.ReactElement) {
-  const queryClient = createTestQueryClient();
-  return render(
-    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>,
-  );
-}
 
 const mockUser: GitHubUser = {
   id: 1,

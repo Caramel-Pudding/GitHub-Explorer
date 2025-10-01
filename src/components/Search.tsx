@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useGitHubSearch } from "@/lib/hooks/useGitHubSearch";
 import { UserDropdown } from "@/components/UserDropdown";
+import { UI_TEXT } from "@/lib/constants";
+import { styles } from "@/lib/styles";
 
 export function Search() {
   const [searchInput, setSearchInput] = useState("");
@@ -11,10 +13,19 @@ export function Search() {
 
   const { data = [], isFetching, error } = useGitHubSearch(searchQuery);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     setSearchQuery(searchInput);
   };
+
+  const handleToggleUser = (userId: number) => {
+    setExpandedUserId((current) => (current === userId ? null : userId));
+  };
+
+  const showResults = searchQuery && !isFetching;
+  const hasError = showResults && error;
+  const isEmpty = showResults && !error && data.length === 0;
+  const hasData = showResults && !error && data.length > 0;
 
   return (
     <div className="mx-auto max-w-md space-y-6 p-6">
@@ -23,38 +34,38 @@ export function Search() {
           id="search-input"
           type="text"
           value={searchInput}
-          onChange={(event) => {
-            setSearchInput(event.target.value);
+          onChange={(e) => {
+            setSearchInput(e.target.value);
           }}
-          placeholder="Enter username..."
-          aria-label="Search GitHub users"
-          className="w-full rounded border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          placeholder={UI_TEXT.PLACEHOLDERS.SEARCH}
+          aria-label={UI_TEXT.LABELS.SEARCH}
+          className={styles.input.base}
         />
         <button
           type="submit"
           disabled={isFetching}
-          className="w-full rounded bg-blue-500 px-6 py-2 font-medium text-white transition-colors hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className={styles.button.primary}
         >
-          Search
+          {UI_TEXT.LABELS.SEARCH_BUTTON}
         </button>
       </form>
 
-      {searchQuery && error && (
-        <div className="rounded bg-red-50 px-4 py-3 text-sm text-red-700">
-          Failed to search users: {error.message}
+      {hasError && (
+        <div className={styles.message.error}>
+          {UI_TEXT.ERRORS.SEARCH_FAILED} {error.message}
         </div>
       )}
 
-      {searchQuery && !isFetching && !error && data.length === 0 && (
-        <div className="rounded bg-gray-100 px-4 py-3 text-sm text-gray-600">
-          No users found for &quot;{searchQuery}&quot;
+      {isEmpty && (
+        <div className={styles.message.info}>
+          {UI_TEXT.MESSAGES.NO_USERS(searchQuery)}
         </div>
       )}
 
-      {searchQuery && !isFetching && !error && data.length > 0 && (
+      {hasData && (
         <div className="space-y-4">
           <p className="text-sm text-gray-600">
-            Showing users for &quot;{searchQuery}&quot;
+            {UI_TEXT.MESSAGES.SHOWING_RESULTS(searchQuery)}
           </p>
           <div className="space-y-2">
             {data.map((user) => (
@@ -63,9 +74,7 @@ export function Search() {
                 user={user}
                 isExpanded={expandedUserId === user.id}
                 onToggle={() => {
-                  setExpandedUserId(
-                    expandedUserId === user.id ? null : user.id,
-                  );
+                  handleToggleUser(user.id);
                 }}
               />
             ))}

@@ -1,9 +1,9 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, test, vi } from "vitest";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Search } from "@/components/Search";
 import * as githubApi from "@/lib/api/github";
+import { renderWithQueryClient } from "@/__tests__/utils/testUtils";
 
 // Mock the GitHub API
 vi.mock("@/lib/api/github", () => ({
@@ -11,23 +11,6 @@ vi.mock("@/lib/api/github", () => ({
 }));
 
 const mockSearchGitHubUsers = vi.mocked(githubApi.searchGitHubUsers);
-
-function createTestQueryClient() {
-  return new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-      },
-    },
-  });
-}
-
-function renderWithQueryClient(ui: React.ReactElement) {
-  const queryClient = createTestQueryClient();
-  return render(
-    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>,
-  );
-}
 
 test("renders search input and button", () => {
   renderWithQueryClient(<Search />);

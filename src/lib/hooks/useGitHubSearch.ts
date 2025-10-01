@@ -1,13 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { searchGitHubUsers } from "@/lib/api/github";
-
-/**
- * Query key factory for GitHub user search
- */
-export const githubSearchKeys = {
-  all: ["github", "search"] as const,
-  search: (query: string) => [...githubSearchKeys.all, query] as const,
-};
+import { queryKeys } from "@/lib/queryKeys";
 
 /**
  * Hook to search for GitHub users
@@ -15,7 +8,7 @@ export const githubSearchKeys = {
  */
 export function useGitHubSearch(query: string) {
   return useQuery({
-    queryKey: githubSearchKeys.search(query),
+    queryKey: queryKeys.github.search(query),
     queryFn: () => searchGitHubUsers(query),
     enabled: query.length > 0,
   });

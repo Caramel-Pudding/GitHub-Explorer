@@ -1,27 +1,23 @@
 import {
   githubSearchResponseSchema,
   githubRepositorySchema,
-  type GitHubUser,
-  type GitHubRepository,
 } from "@/lib/schemas/github";
 import { z } from "zod";
+import { GITHUB_API } from "@/lib/constants";
 
-const API_BASE = "https://api.github.com";
-const SEARCH_LIMIT = 5;
-
-export async function searchGitHubUsers(query: string): Promise<GitHubUser[]> {
-  const url = `${API_BASE}/search/users?q=${encodeURIComponent(query)}&per_page=${String(SEARCH_LIMIT)}`;
-
+async function fetchFromGitHub<T>(
+  url: string,
+  schema: z.ZodType<T>,
+  errorPrefix: string,
+): Promise<T> {
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(`GitHub API error: ${response.statusText}`);
+    throw new Error(`${errorPrefix}: ${response.statusText}`);
   }
 
   const rawData: unknown = await response.json();
-
-  // Validate response with Zod schema
-  const parseResult = githubSearchResponseSchema.safeParse(rawData);
+  const parseResult = schema.safeParse(rawData);
 
   if (!parseResult.success) {
     throw new Error(
@@ -29,34 +25,27 @@ export async function searchGitHubUsers(query: string): Promise<GitHubUser[]> {
     );
   }
 
-  return parseResult.data.items;
+  return parseResult.data;
 }
 
-const githubRepositoriesArraySchema = z.array(githubRepositorySchema);
+export async function searchGitHubUsers(query: string) {
+  const url = `${GITHUB_API.BASE_URL}${GITHUB_API.ENDPOINTS.SEARCH_USERS}?q=${encodeURIComponent(query)}&per_page=${String(GITHUB_API.LIMITS.SEARCH)}`;
 
-export async function fetchUserRepositories(
-  username: string,
-): Promise<GitHubRepository[]> {
-  const url = `${API_BASE}/users/${encodeURIComponent(username)}/repos?sort=updated&per_page=10`;
+  const response = await fetchFromGitHub(
+    url,
+    githubSearchResponseSchema,
+    "GitHub API error",
+  );
 
-  const response = await fetch(url);
+  return response.items;
+}
 
-  if (!response.ok) {
-    throw new Error(
-      `Failed to fetch repositories for ${username}: ${response.statusText}`,
-    );
-  }
+export async function fetchUserRepositories(username: string) {
+  const url = `${GITHUB_API.BASE_URL}${GITHUB_API.ENDPOINTS.USER_REPOS}/${encodeURIComponent(username)}/repos?sort=updated&per_page=${String(GITHUB_API.LIMITS.REPOSITORIES)}`;
 
-  const rawData: unknown = await response.json();
-
-  // Validate response with Zod schema (array of repositories)
-  const parseResult = githubRepositoriesArraySchema.safeParse(rawData);
-
-  if (!parseResult.success) {
-    throw new Error(
-      `Invalid GitHub repositories response: ${parseResult.error.message}`,
-    );
-  }
-
-  return parseResult.data;
+  return fetchFromGitHub(
+    url,
+    z.array(githubRepositorySchema),
+    `Failed to fetch repositories for ${username}`,
+  );
 }
