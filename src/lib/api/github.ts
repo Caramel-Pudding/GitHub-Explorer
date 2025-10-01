@@ -41,7 +41,7 @@ export async function searchGitHubUsers(query: string) {
 }
 
 export async function fetchUserRepositories(username: string) {
-  const url = `${GITHUB_API.BASE_URL}${GITHUB_API.ENDPOINTS.USER_REPOS}/${encodeURIComponent(username)}/repos?sort=updated&per_page=${String(GITHUB_API.LIMITS.REPOSITORIES)}`;
+  const url = `${GITHUB_API.BASE_URL}${GITHUB_API.ENDPOINTS.USER_REPOS}/${encodeURIComponent(username)}/repos?sort=updated`;
 
   return fetchFromGitHub(
     url,

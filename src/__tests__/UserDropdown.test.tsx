@@ -164,3 +164,40 @@ test("shows error message when repository fetch fails", async () => {
   expect(screen.queryByText(/no repositories found/i)).not.toBeInTheDocument();
   expect(screen.queryByRole("link")).not.toBeInTheDocument();
 });
+
+test("displays all repositories without limit", async () => {
+  const onToggle = vi.fn();
+  // Mock API returning many repositories
+  const manyRepositories = Array.from({ length: 20 }, (_, i) => ({
+    id: 100 + i,
+    name: `repo-${String(i + 1)}`,
+    description: `Repository number ${String(i + 1)}`,
+    stargazers_count: (i + 1) * 10,
+    html_url: `https://github.com/octocat/repo-${String(i + 1)}`,
+  }));
+
+  mockFetchUserRepositories.mockResolvedValue(manyRepositories);
+
+  renderWithQueryClient(
+    <UserDropdown user={mockUser} isExpanded={true} onToggle={onToggle} />,
+  );
+
+  // Wait for first repository to appear
+  await screen.findByText("repo-1");
+
+  // Verify all 20 repositories are displayed
+  for (let i = 1; i <= 20; i++) {
+    expect(screen.getByText(`repo-${String(i)}`)).toBeInTheDocument();
+    expect(
+      screen.getByText(`Repository number ${String(i)}`),
+    ).toBeInTheDocument();
+    expect(screen.getByText(String(i * 10))).toBeInTheDocument();
+  }
+
+  // Verify the API was called with the username
+  expect(mockFetchUserRepositories).toHaveBeenCalledWith("octocat");
+
+  // Verify all repository links are present
+  const links = screen.getAllByRole("link");
+  expect(links).toHaveLength(20);
+});

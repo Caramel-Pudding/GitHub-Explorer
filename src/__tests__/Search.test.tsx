@@ -177,3 +177,61 @@ test("displays user results when search succeeds", async () => {
   expect(screen.queryByText(/failed to search users/i)).not.toBeInTheDocument();
   expect(screen.queryByText(/no users found/i)).not.toBeInTheDocument();
 });
+
+test("limits search results to 5 users as configured", async () => {
+  const user = userEvent.setup();
+  // Mock API returning more than 5 users
+  mockSearchGitHubUsers.mockResolvedValue([
+    {
+      id: 1,
+      login: "user1",
+      avatar_url: "https://github.com/images/user1.gif",
+      html_url: "https://github.com/user1",
+    },
+    {
+      id: 2,
+      login: "user2",
+      avatar_url: "https://github.com/images/user2.gif",
+      html_url: "https://github.com/user2",
+    },
+    {
+      id: 3,
+      login: "user3",
+      avatar_url: "https://github.com/images/user3.gif",
+      html_url: "https://github.com/user3",
+    },
+    {
+      id: 4,
+      login: "user4",
+      avatar_url: "https://github.com/images/user4.gif",
+      html_url: "https://github.com/user4",
+    },
+    {
+      id: 5,
+      login: "user5",
+      avatar_url: "https://github.com/images/user5.gif",
+      html_url: "https://github.com/user5",
+    },
+  ]);
+
+  renderWithQueryClient(<Search />);
+
+  const input = screen.getByLabelText(/search github users/i);
+  const button = screen.getByRole("button", { name: /search/i });
+
+  await user.type(input, "popular");
+  await user.click(button);
+
+  // Wait for results to appear
+  await screen.findByText(/showing users for "popular"/i);
+
+  // Verify exactly 5 users are displayed
+  expect(screen.getByRole("button", { name: /user1/i })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /user2/i })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /user3/i })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /user4/i })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /user5/i })).toBeInTheDocument();
+
+  // Verify the API was called with the search query
+  expect(mockSearchGitHubUsers).toHaveBeenCalledWith("popular");
+});

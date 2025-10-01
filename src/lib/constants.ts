@@ -6,7 +6,6 @@ export const GITHUB_API = {
   },
   LIMITS: {
     SEARCH: 5,
-    REPOSITORIES: 10,
   },
   CACHE_TIME: 5 * 60 * 1000, // 5 minutes
 } as const;
