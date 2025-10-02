@@ -1,5 +1,7 @@
 # GitHub Explorer
 
+https://git-hub-explorer-demo.vercel.app/
+
 A modern web application built with Next.js 15 and React 19 that allows users to search for GitHub users and explore their repositories with a clean, intuitive interface.
 
 ## Features
