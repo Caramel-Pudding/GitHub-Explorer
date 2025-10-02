@@ -189,9 +189,8 @@ All GitHub API responses are validated with Zod schemas:
 
 ### Test Coverage
 
-- **Search Component**: 7 tests covering search, loading, errors, empty states, and success
-- **UserDropdown Component**: 7 tests covering expansion, repositories, errors, and accessibility
-- **Total Coverage**: All UI states (loading, error, empty, success) are tested
+<img width="897" height="759" alt="Screenshot 2025-10-02 at 12 05 13" src="https://github.com/user-attachments/assets/9154ea44-fa3a-4cf3-bb31-34e9ee771bff" />
+
 
 ### Running Tests
 
