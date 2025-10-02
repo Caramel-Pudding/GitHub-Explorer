@@ -64,80 +64,6 @@ To avoid rate limiting, you can add a GitHub personal access token:
 
 This increases the rate limit from 60 requests/hour to 5,000 requests/hour.
 
-## Available Scripts
-
-### Development
-```bash
-npm run dev              # Start development server with Turbopack
-npm run type-check:watch # Watch mode for type checking (relaxed rules)
-npm run type-check:dev   # One-time type check for development
-```
-
-### Testing
-```bash
-npm test                 # Run tests in watch mode
-npm run test:run         # Run tests once
-npm run test:ui          # Run tests with UI
-npm run test:coverage    # Run tests with coverage report
-```
-
-### Building & Production
-```bash
-npm run build            # Build for production with Turbopack
-npm start                # Start production server
-npm run preview          # Build and start production server
-npm run analyze          # Build with bundle analysis
-```
-
-### Code Quality
-```bash
-npm run lint             # Run ESLint (fails on any warnings)
-npm run lint:fix         # Auto-fix ESLint issues
-npm run lint:report      # Generate HTML report
-npm run type-check       # Full type check with strict rules
-npm run validate         # Run type-check, lint, and test:run in parallel
-```
-
-### Maintenance
-```bash
-npm run clean            # Remove build artifacts and cache
-npm run clean:full       # Also remove coverage and reports
-npm run clean:deps       # Reinstall dependencies from scratch
-npm run audit            # Check for security vulnerabilities
-npm run deps:check       # Check for outdated dependencies
-```
-
-## Project Structure
-
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── layout.tsx         # Root layout (server component)
-│   ├── providers.tsx      # QueryClientProvider wrapper
-│   └── page.tsx           # Home page
-├── components/            # React components
-│   ├── Search.tsx        # Main search UI
-│   ├── UserDropdown.tsx  # Expandable user card with repos
-│   └── Icons.tsx         # Reusable SVG icon components
-├── lib/                   # Core application logic
-│   ├── api/
-│   │   └── github.ts     # GitHub API client
-│   ├── hooks/
-│   │   ├── useGitHubSearch.ts      # User search query hook
-│   │   └── useUserRepositories.ts  # Repository query hook
-│   ├── schemas/
-│   │   └── github.ts     # Zod schemas for validation
-│   ├── constants.ts      # App constants (API config, UI text)
-│   ├── queryKeys.ts      # Centralized query key factory
-│   └── styles.ts         # Shared Tailwind class constants
-└── __tests__/             # Test files
-    ├── setup.ts          # Vitest configuration
-    ├── Search.test.tsx   # Search component tests
-    ├── UserDropdown.test.tsx  # UserDropdown component tests
-    └── utils/
-        └── testUtils.tsx # Shared test utilities
-```
-
 ## Architecture Highlights
 
 ### Centralized Configuration
@@ -237,24 +163,6 @@ The app uses the GitHub REST API:
 - Unauthenticated: 60 requests/hour
 - With token: 5,000 requests/hour
 - Errors are displayed to users when limits are exceeded
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes
-4. Ensure tests pass: `npm run validate`
-5. Commit your changes: `git commit -m 'Add amazing feature'`
-6. Push to the branch: `git push origin feature/amazing-feature`
-7. Open a Pull Request
-
-### Development Guidelines
-
-- Follow the existing code patterns (custom hooks, query factories)
-- Write tests for new features
-- Ensure `npm run validate` passes before committing
-- Use TypeScript strict mode
-- Add Zod schemas for new API responses
 
 ## License
 
