@@ -20,7 +20,7 @@ A modern web application built with Next.js 15 and React 19 that allows users to
 - **Framework**: Next.js 15.5.0 with Turbopack
 - **UI Library**: React 19.1.0
 - **Data Fetching**: TanStack Query (@tanstack/react-query)
-- **Styling**: Tailwind CSS v4
+- **Styling**: Tailwind CSS v3
 - **Validation**: Zod for runtime type validation
 - **Testing**: Vitest with Testing Library and jsdom
 - **Type Checking**: TypeScript 5 with enhanced strictness

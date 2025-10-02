@@ -2,7 +2,8 @@
 
 import { useUserRepositories } from "@/lib/hooks/useUserRepositories";
 import type { GitHubUser } from "@/lib/schemas/github";
-import { ChevronDownIcon, StarIcon } from "@/components/Icons";
+import { ChevronDownIcon } from "@/components/Icons";
+import { RepositoryCard } from "@/components/RepositoryCard";
 import { UI_TEXT } from "@/lib/constants";
 import { styles } from "@/lib/styles";
 
@@ -69,28 +70,7 @@ export function UserDropdown({
           {!isLoading &&
             !error &&
             repositories.map((repo) => (
-              <a
-                key={repo.id}
-                href={repo.html_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.repository.link}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">{repo.name}</h3>
-                    {repo.description && (
-                      <p className="mt-1 text-sm text-gray-600">
-                        {repo.description}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1 text-sm font-medium text-gray-700">
-                    <span>{repo.stargazers_count}</span>
-                    <StarIcon />
-                  </div>
-                </div>
-              </a>
+              <RepositoryCard key={repo.id} repository={repo} />
             ))}
         </div>
       )}
